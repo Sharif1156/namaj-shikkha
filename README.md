@@ -11,7 +11,7 @@ required after the first load.
 ```bash
 npm install
 npm start          # http://localhost:5173
-npm test           # 128 tests
+npm test           # 135 tests
 npm run verify     # tests + content lint + service-worker checks
 ```
 
@@ -110,7 +110,7 @@ src/
   ui/dom.js                 tiny DOM helpers, escaping, countdown
   views/                    home · qibla · salah · duas · tasbih · more
   data/                     salah.json · duas.json · names99.json
-tests/                      128 tests across 7 files
+tests/                      135 tests across 7 files
 scripts/                    content validation, SW check + version stamp,
                             icons, Play Store screenshots
 privacy.html                bilingual privacy policy (required by Play)
@@ -137,7 +137,7 @@ so a crafted city name or search query cannot inject HTML.
 ## Testing
 
 ```bash
-npm test                 # all 128 tests
+npm test                 # all 135 tests
 npm run lint:content     # religious content integrity
 node scripts/check-sw-manifest.mjs   # precache list vs filesystem
 ```
