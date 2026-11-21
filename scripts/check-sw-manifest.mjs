@@ -37,6 +37,7 @@ for (const entry of entries) {
 // Also flag app files that exist but were never precached.
 const critical = [
   'index.html',
+  'privacy.html',
   'src/main.js',
   'src/state.js',
   'src/services.js',

@@ -2,10 +2,10 @@
  * main.js — bootstrap, routing and cross-cutting concerns.
  */
 
-import { setLocale, t, getLocale, detectLocale } from './core/i18n.js';
+import { setLocale, t, getLocale } from './core/i18n.js';
 import { formatHours } from './core/prayer-times.js';
 import { HIJRI_MONTHS_BN } from './core/hijri.js';
-import { hijriFor } from './services.js';
+import { hijriFor, dateKey } from './services.js';
 import * as state from './state.js';
 import { qs, qsa } from './ui/dom.js';
 
@@ -27,6 +27,7 @@ const viewEl = qs(document, '#view');
 let currentRoute = null;
 let currentView = null;
 let tickTimer = null;
+let mountedDay = dateKey();
 
 /* ----------------------------------------------------------------- theme */
 
@@ -92,6 +93,7 @@ function mount(route, { force = false } = {}) {
 
   currentView?.cleanup?.();
   currentRoute = route;
+  mountedDay = dateKey();
 
   const view = VIEWS[route](ctx);
   currentView = view;
@@ -170,8 +172,12 @@ function boot() {
 
   registerServiceWorker();
   // Re-render when the tab becomes visible again after a long pause.
+  // Only rebuild if the day rolled over while hidden; remounting on every
+  // return would reset the compass, scroll position and open settings page.
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') mount(currentRoute, { force: true });
+    if (document.visibilityState !== 'visible') return;
+    if (dateKey() !== mountedDay) mount(currentRoute, { force: true });
+    else currentView?.tick?.(new Date());
   });
 }
 

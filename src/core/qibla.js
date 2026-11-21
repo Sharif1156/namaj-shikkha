@@ -63,8 +63,7 @@ export function compassHeading(event, screenAngle = 0) {
     return ((event.webkitCompassHeading % 360) + 360) % 360;
   }
   if (typeof event.alpha === 'number' && Number.isFinite(event.alpha)) {
-    const absolute = event.absolute === true;
-    const heading = 360 - event.alpha + (absolute ? 0 : 0) + screenAngle;
+    const heading = 360 - event.alpha + screenAngle;
     return ((heading % 360) + 360) % 360;
   }
   return null;
@@ -83,6 +82,16 @@ export function dialRotation(heading) {
 export function needleRotation(heading, bearing) {
   if (!Number.isFinite(heading)) return bearing;
   return ((bearing - heading + 540) % 360) - 180;
+}
+
+/**
+ * Which way to turn to face the Qibla: 'right', 'left', or 'aligned' when
+ * within `tolerance` degrees. Handles the 359° → 0° wraparound correctly.
+ */
+export function turnDirection(heading, bearing, tolerance = 6) {
+  const delta = needleRotation(heading, bearing); // (-180, 180]
+  if (Math.abs(delta) < tolerance) return 'aligned';
+  return delta > 0 ? 'right' : 'left';
 }
 
 /** 16-point compass abbreviation for a bearing. */

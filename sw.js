@@ -1,12 +1,15 @@
 /**
  * sw.js — offline support.
  *
- * Strategy: cache-first for the app shell so the app opens instantly with no
- * network, network-first for everything else with a cache fallback. Bump
- * VERSION to invalidate old caches on the next deploy.
+ * Strategy: network-first with a short timeout, falling back to the cache.
+ * Online users always get the latest files (no stale-cache trap after a
+ * deploy); offline or on a bad connection the precached copy is served.
+ *
+ * VERSION is stamped from a hash of the precached files by
+ * `npm run stamp`; CI fails if it is stale, so it cannot be forgotten.
  */
 
-const VERSION = 'v1';
+const VERSION = 'bc0dbfbe60';
 const CACHE = `namaj-${VERSION}`;
 
 const CORE = [
@@ -16,6 +19,8 @@ const CORE = [
   './assets/icon.svg',
   './assets/icon-192.png',
   './assets/icon-512.png',
+  './assets/icon-maskable-512.png',
+  './privacy.html',
   './src/styles/main.css',
   './src/main.js',
   './src/state.js',
@@ -39,15 +44,17 @@ const CORE = [
   './src/data/names99.json',
 ];
 
+const NETWORK_TIMEOUT_MS = 3500;
+
 self.addEventListener('install', (event) => {
+  // No catch: if any precache file fails, the install must fail so the previous
+  // working worker stays in charge, rather than leaving an empty cache that
+  // silently breaks offline mode.
   event.waitUntil(
     caches
       .open(CACHE)
       .then((cache) => cache.addAll(CORE))
       .then(() => self.skipWaiting())
-      .catch(() => {
-        /* A single missing file must not abort the install. */
-      })
   );
 });
 
@@ -55,10 +62,35 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then((keys) =>
+        Promise.all(
+          keys.filter((k) => k.startsWith('namaj-') && k !== CACHE).map((k) => caches.delete(k))
+        )
+      )
       .then(() => self.clients.claim())
   );
 });
+
+async function networkFirst(request, fallbackUrl) {
+  const cache = await caches.open(CACHE);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), NETWORK_TIMEOUT_MS);
+  try {
+    const response = await fetch(request, { signal: controller.signal });
+    if (response.ok && response.type === 'basic') cache.put(request, response.clone());
+    return response;
+  } catch {
+    const cached = await cache.match(request, { ignoreSearch: true });
+    if (cached) return cached;
+    if (fallbackUrl) {
+      const shell = await cache.match(fallbackUrl);
+      if (shell) return shell;
+    }
+    return Response.error();
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 self.addEventListener('fetch', (event) => {
   const { request } = event;
@@ -66,27 +98,10 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return; // never cache third parties
+  if (url.pathname.startsWith('/.well-known/')) return; // Digital Asset Links etc.
 
-  // Navigations: serve the shell so deep links work offline.
-  if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request).catch(() => caches.match('./index.html').then((r) => r ?? Response.error()))
-    );
-    return;
-  }
-
+  // Navigations fall back to the app shell so deep links work offline.
   event.respondWith(
-    caches.match(request).then((cached) => {
-      if (cached) return cached;
-      return fetch(request)
-        .then((response) => {
-          if (response.ok && response.type === 'basic') {
-            const copy = response.clone();
-            caches.open(CACHE).then((cache) => cache.put(request, copy));
-          }
-          return response;
-        })
-        .catch(() => cached ?? Response.error());
-    })
+    networkFirst(request, request.mode === 'navigate' ? './index.html' : null)
   );
 });

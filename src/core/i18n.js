@@ -95,6 +95,7 @@ const STRINGS = {
     'about.privacy':
       'Your location never leaves the device. There is no analytics and no third party.',
     'about.build': 'Build',
+    'about.privacyLink': 'Privacy policy',
     'about.source': 'Content sources',
     'about.disclaimer': 'Not affiliated with any of the apps it was inspired by.',
 
@@ -202,6 +203,7 @@ const STRINGS = {
     'about.privacy':
       'আপনার অবস্থান কখনো ডিভাইসের বাইরে যায় না। কোনো অ্যানালিটিক্স বা তৃতীয় পক্ষ নেই।',
     'about.build': 'বিল্ড',
+    'about.privacyLink': 'গোপনীয়তা নীতি',
     'about.source': 'তথ্যসূত্র',
     'about.disclaimer': 'এটি যেসব অ্যাপ থেকে অনুপ্রাণিত, তাদের সঙ্গে কোনো সম্পর্ক নেই।',
 
