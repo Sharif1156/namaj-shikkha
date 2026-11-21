@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en" data-theme="auto">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Namaj Shikkha — offline prayer times, Qibla, step-by-step salah guide, duas, tasbih and Hijri calendar in Bengali and English." />
+    <meta name="theme-color" content="#0f3d33" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Namaj Shikkha" />
+    <title>Namaj Shikkha — নামাজ শিক্ষা</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./assets/icon-192.png" />
+    <link rel="stylesheet" href="./src/styles/main.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#view">Skip to content</a>
+
+    <div id="app">
+      <header class="topbar">
+        <div class="topbar__brand">
+          <svg class="topbar__mark" viewBox="0 0 32 32" aria-hidden="true">
+            <path d="M16 2 A14 14 0 1 0 28 20 A11 11 0 1 1 16 2 Z" fill="currentColor" />
+            <circle cx="24" cy="8" r="2.4" fill="currentColor" />
+          </svg>
+          <div class="topbar__titles">
+            <h1 class="topbar__title" data-i18n="app.name">Namaj Shikkha</h1>
+            <p class="topbar__sub" id="hijri-today">&nbsp;</p>
+          </div>
+        </div>
+        <button class="icon-btn" id="settings-btn" type="button" aria-label="Settings" title="Settings">
+          <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20">
+            <path fill="currentColor" d="M12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7Zm7.4-2.6.1-1-.1-1 2-1.6-2-3.4-2.4 1a7.4 7.4 0 0 0-1.7-1L15 3H9l-.4 2.6a7.4 7.4 0 0 0-1.7 1l-2.4-1-2 3.4 2 1.6-.1 1 .1 1-2 1.6 2 3.4 2.4-1a7.4 7.4 0 0 0 1.7 1L9 21h6l.4-2.6a7.4 7.4 0 0 0 1.7-1l2.4 1 2-3.4-2-1.6Z"/>
+          </svg>
+        </button>
+      </header>
+
+      <main id="view" class="view" tabindex="-1"></main>
+
+      <nav class="tabbar" aria-label="Primary">
+        <button class="tabbar__btn is-active" data-route="home" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3 2 11h3v10h6v-6h2v6h6V11h3L12 3Z"/></svg>
+          <span data-i18n="nav.times">Prayer</span>
+        </button>
+        <button class="tabbar__btn" data-route="qibla" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 2.2 1.6 6.9-1.6 1.2-1.6-1.2L12 4.2ZM12 21.8a9.8 9.8 0 0 1-7.6-3.7l6-1.9 1.6 1.2-1.6 3.2A9.8 9.8 0 0 1 12 21.8Z"/></svg>
+          <span data-i18n="nav.qibla">Qibla</span>
+        </button>
+        <button class="tabbar__btn" data-route="salah" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 20h16v-2H4v2Zm2-4h12v-2H6v2Zm-2-4h16V9a8 8 0 0 0-16 0v3Zm8-9a5 5 0 0 0-4.6 3h9.2A5 5 0 0 0 12 3Z"/></svg>
+          <span data-i18n="nav.salah">Salah</span>
+        </button>
+        <button class="tabbar__btn" data-route="duas" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6 4h12a2 2 0 0 1 2 2v14l-8-4-8 4V6a2 2 0 0 1 2-2Z"/></svg>
+          <span data-i18n="nav.duas">Duas</span>
+        </button>
+        <button class="tabbar__btn" data-route="more" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm6 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm6 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg>
+          <span data-i18n="nav.more">More</span>
+        </button>
+      </nav>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
