@@ -29,7 +29,14 @@ for (const entry of entries) {
   const rel = entry.replace(/^\.\//, '') || 'index.html';
   const file = join(ROOT, rel === '' || rel === '.' ? 'index.html' : rel);
   hash.update(entry);
-  if (existsSync(file)) hash.update(readFileSync(file));
+  if (existsSync(file)) {
+    let data = readFileSync(file);
+    // Hash text files with LF endings so Windows checkouts (autocrlf) match.
+    if (!/\.(png|ico|jpg|jpeg|webp)$/i.test(file)) {
+      data = Buffer.from(data.toString('utf8').replace(/\r\n/g, '\n'));
+    }
+    hash.update(data);
+  }
 }
 const version = hash.digest('hex').slice(0, 10);
 
