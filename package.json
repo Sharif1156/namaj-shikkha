@@ -1,0 +1,26 @@
+{
+  "name": "namaj-shikkha",
+  "version": "1.0.0",
+  "description": "Namaj Shikkha — an offline-first Islamic prayer companion: prayer times, Qibla, step-by-step salah guide, duas, tasbih and Hijri calendar, in Bengali and English.",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node server.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint:content": "node scripts/validate-content.mjs",
+    "check:sw": "node scripts/check-sw-manifest.mjs",
+    "icons": "node scripts/make-icons.mjs",
+    "verify": "npm test && npm run lint:content && npm run check:sw"
+  },
+  "devDependencies": {
+    "linkedom": "^0.18.15",
+    "vitest": "^2.1.8"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
