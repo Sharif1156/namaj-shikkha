@@ -26,6 +26,7 @@ export function timesFor(date = new Date(), settings = get()) {
     madhab: settings.madhab,
     highLatitudeRule: settings.highLat,
     adjustments: settings.adjustments,
+    dhuhrMinutes: settings.dhuhrMinutes ?? 1,
   });
 }
 

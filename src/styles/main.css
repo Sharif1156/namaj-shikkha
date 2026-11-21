@@ -702,19 +702,12 @@ html[lang="bn"] body {
 
 .compass {
   position: relative;
-  width: min(78vw, 320px);
+  --compass-size: min(78vw, 320px);
+  width: var(--compass-size);
   aspect-ratio: 1;
   margin: 12px auto 0;
   border-radius: 50%;
-  background:
-    radial-gradient(circle at 50% 50%, var(--surface) 0 58%, transparent 58.5%),
-    conic-gradient(
-      from 0deg,
-      var(--surface-2) 0deg 90deg,
-      var(--surface) 90deg 180deg,
-      var(--surface-2) 180deg 270deg,
-      var(--surface) 270deg 360deg
-    );
+  background: radial-gradient(circle at 50% 50%, var(--surface) 0 72%, var(--surface-2) 72.5%);
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
 }
@@ -735,13 +728,14 @@ html[lang="bn"] body {
   height: 10px;
   background: var(--text-muted);
   opacity: 0.45;
-  transform-origin: 50% calc(50vw - 6px);
+  /* Rotate about the dial centre: radius = half the compass, minus the inset. */
+  transform-origin: 50% calc(var(--compass-size) / 2 - 6px);
 }
 
 .compass__cardinal {
   position: absolute;
   left: 50%;
-  top: 14px;
+  top: 26px;
   transform: translateX(-50%);
   font-size: 13px;
   font-weight: 800;
@@ -750,16 +744,16 @@ html[lang="bn"] body {
 }
 .compass__cardinal--s {
   top: auto;
-  bottom: 14px;
+  bottom: 26px;
 }
 .compass__cardinal--e {
   left: auto;
-  right: 16px;
+  right: 28px;
   top: 50%;
   transform: translateY(-50%);
 }
 .compass__cardinal--w {
-  left: 16px;
+  left: 28px;
   top: 50%;
   transform: translateY(-50%);
 }

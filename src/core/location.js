@@ -62,35 +62,51 @@ function haversineKm(lat1, lon1, lat2, lon2) {
 }
 
 /**
- * Current UTC offset in hours for a location, using the IANA zone when the
- * browser can supply it. Falls back to the caller-provided default.
+ * UTC offset (hours) of an IANA zone on a given date, DST-aware.
+ * Returns null when the zone is unknown or Intl cannot resolve it.
  */
-export function currentTimezone() {
-  return -new Date().getTimezoneOffset() / 60;
+export function zoneOffset(zone, date = new Date()) {
+  if (!zone) return null;
+  try {
+    const fmt = new Intl.DateTimeFormat('en-US', { timeZone: zone, timeZoneName: 'shortOffset' });
+    const part = fmt.formatToParts(date).find((p) => p.type === 'timeZoneName');
+    const value = part?.value ?? '';
+    if (value === 'GMT' || value === 'UTC') return 0;
+    const m = value.match(/^(?:GMT|UTC)([+-])(\d{1,2})(?::(\d{2}))?$/);
+    if (!m) return null;
+    const hours = Number(m[2]) + (m[3] ? Number(m[3]) / 60 : 0);
+    return m[1] === '-' ? -hours : hours;
+  } catch {
+    return null;
+  }
+}
+
+/** The device's IANA zone, e.g. "Asia/Dhaka", or null if unavailable. */
+export function deviceZone() {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || null;
+  } catch {
+    return null;
+  }
+}
+
+/** The device's UTC offset in hours on a given date (DST-aware). */
+export function currentTimezone(date = new Date()) {
+  return -date.getTimezoneOffset() / 60;
+}
+
+/** IANA zone for a built-in city, or null. */
+export function cityZone(city) {
+  return (city && CITY_ZONES[city.id]) || null;
 }
 
 /**
- * Best-effort timezone offset for a city, honouring daylight saving for the
- * current date when the browser supports `Intl` time zones.
+ * Timezone offset for a city on `date`, honouring daylight saving when the
+ * browser supports Intl zones, otherwise the city's fixed offset.
  */
 export function cityTimezone(city, date = new Date()) {
-  if (!city) return currentTimezone();
-  try {
-    const fmt = new Intl.DateTimeFormat('en-US', {
-      timeZone: CITY_ZONES[city.id] ?? 'UTC',
-      timeZoneName: 'shortOffset',
-    });
-    const part = fmt.formatToParts(date).find((p) => p.type === 'timeZoneName');
-    const m = part?.value?.match(/GMT([+-]\d{1,2})(?::(\d{2}))?/);
-    if (m) {
-      const h = Number(m[1]);
-      const min = m[2] ? Number(m[2]) / 60 : 0;
-      return h + Math.sign(h) * min;
-    }
-  } catch {
-    /* fall through */
-  }
-  return city.timezone;
+  if (!city) return currentTimezone(date);
+  return zoneOffset(cityZone(city), date) ?? city.timezone;
 }
 
 /** IANA zone per city, for daylight-saving-aware offsets. */

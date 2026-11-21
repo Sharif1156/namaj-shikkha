@@ -367,8 +367,9 @@ export function create(ctx) {
         </div>
       </div>
       <div class="card">
-        <div class="row-between"><span>${esc(t('about.build'))}</span><code style="font-size:12px;">1.0.0</code></div>
+        <div class="row-between"><span>${esc(t('about.build'))}</span><code style="font-size:12px;">1.1.0</code></div>
         <div class="row-between"><span>${esc(t('times.method'))}</span><span style="font-size:13px;">${esc(times.meta.methodName)}</span></div>
+        <div class="row-between"><span>${esc(t('about.privacyLink'))}</span><a href="./privacy.html" style="font-size:13px;color:var(--accent,inherit);">privacy.html ↗</a></div>
         <div class="row-between"><span>${esc(t('about.source'))}</span><span style="font-size:13px;">Qur'an · Bukhari · Muslim</span></div>
       </div>
       <p class="muted-text" style="margin-top:14px;">${esc(t('about.disclaimer'))}</p>

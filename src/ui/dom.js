@@ -43,15 +43,19 @@ export function on(root, event, selector, handler) {
 
 /**
  * Format a duration in milliseconds as a short countdown, e.g. "1h 24m"
- * or "4m 09s" when under an hour.
+ * or "4m 09s" when under an hour. Bengali: "১ ঘণ্টা ২৪ মি" / "৪ মি ০৯ সে".
  */
-export function countdown(ms) {
+export function countdown(ms, locale = 'en') {
   if (!Number.isFinite(ms) || ms < 0) return '—';
   const total = Math.floor(ms / 1000);
   const h = Math.floor(total / 3600);
   const m = Math.floor((total % 3600) / 60);
   const s = total % 60;
   const pad = (n) => String(n).padStart(2, '0');
+  if (locale === 'bn') {
+    const bn = (v) => digits(v, 'bn');
+    return h > 0 ? `${bn(h)} ঘণ্টা ${bn(pad(m))} মি` : `${bn(m)} মি ${bn(pad(s))} সে`;
+  }
   if (h > 0) return `${h}h ${pad(m)}m`;
   return `${m}m ${pad(s)}s`;
 }

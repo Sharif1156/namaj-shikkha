@@ -2,7 +2,7 @@
  * qibla.js — compass view with the direction to the Kaaba.
  */
 
-import { qiblaBearing, distanceToKaaba, compassHeading, needleRotation, compassPoint } from '../core/qibla.js';
+import { qiblaBearing, distanceToKaaba, compassHeading, turnDirection, compassPoint } from '../core/qibla.js';
 import { activeLocation, locationLabel, get } from '../state.js';
 import { el, esc, digits } from '../ui/dom.js';
 import { t } from '../core/i18n.js';
@@ -16,6 +16,8 @@ export function create(ctx) {
   let heading = null;
   let listening = false;
   let smoothing = null;
+  let sawAbsolute = false; // Android: true-north events have arrived
+  let watchdog = null;
 
   function ticks() {
     let out = '';
@@ -85,6 +87,15 @@ export function create(ctx) {
       window.addEventListener('deviceorientation', onOrientation, true);
       listening = true;
 
+      // If no usable heading arrives (no magnetometer, or only relative
+      // events), say so instead of leaving a dead needle.
+      watchdog = setTimeout(() => {
+        if (heading === null) {
+          const s = root.querySelector('[data-status]');
+          if (s) s.textContent = t('qibla.noCompass');
+        }
+      }, 2500);
+
       const btn = root.querySelector('[data-action="enable"]');
       if (btn) btn.style.display = 'none';
       if (statusEl) statusEl.textContent = '';
@@ -94,6 +105,18 @@ export function create(ctx) {
   }
 
   function onOrientation(event) {
+    // Android fires both event types. `deviceorientation` alpha is relative to
+    // an arbitrary start, so only trust it when it is flagged absolute (or is
+    // iOS's webkitCompassHeading); otherwise the two streams fight each other.
+    const isAbsoluteEvent = event.type === 'deviceorientationabsolute';
+    if (isAbsoluteEvent) sawAbsolute = true;
+    const trusted =
+      isAbsoluteEvent ||
+      event.absolute === true ||
+      typeof event.webkitCompassHeading === 'number';
+    if (!trusted) return;
+    if (!isAbsoluteEvent && sawAbsolute && typeof event.webkitCompassHeading !== 'number') return;
+
     const screenAngle =
       screen?.orientation?.angle ?? window.orientation ?? 0;
     const raw = compassHeading(event, Number(screenAngle) || 0);
@@ -125,15 +148,13 @@ export function create(ctx) {
     if (dial) dial.style.transform = `rotate(${-heading}deg)`;
     needle.style.setProperty('--angle', `${bearing - heading}deg`);
 
-    const delta = Math.abs(needleRotation(heading, bearing));
-    compass?.classList.toggle('is-aligned', delta < 6);
+    const dir = turnDirection(heading, bearing);
+    compass?.classList.toggle('is-aligned', dir === 'aligned');
 
     const status = root.querySelector('[data-status]');
     if (status) {
       status.textContent =
-        delta < 6
-          ? t('qibla.facing')
-          : `${t('qibla.turn')} ${heading > bearing ? '←' : '→'}`;
+        dir === 'aligned' ? t('qibla.facing') : `${t('qibla.turn')} ${dir === 'left' ? '←' : '→'}`;
     }
   }
 
@@ -142,6 +163,7 @@ export function create(ctx) {
     refresh: () => {},
     tick: () => {},
     cleanup() {
+      clearTimeout(watchdog);
       if (listening) {
         window.removeEventListener('deviceorientationabsolute', onOrientation, true);
         window.removeEventListener('deviceorientation', onOrientation, true);

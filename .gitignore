@@ -41,3 +41,11 @@ yarn-error.log*
 
 # scratch
 .tmp/
+
+# Android signing — never commit these
+*.keystore
+*.jks
+signing.properties
+/android/
+/app-release*.aab
+/app-release*.apk

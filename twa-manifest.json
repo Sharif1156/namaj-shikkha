@@ -1,0 +1,34 @@
+{
+  "packageId": "com.namajshikkha.app",
+  "host": "REPLACE_WITH_YOUR_DOMAIN",
+  "name": "Namaj Shikkha — নামাজ শিক্ষা",
+  "launcherName": "নামাজ শিক্ষা",
+  "display": "standalone",
+  "themeColor": "#0F3D33",
+  "navigationColor": "#0F3D33",
+  "navigationColorDark": "#0B1512",
+  "navigationDividerColor": "#0F3D33",
+  "navigationDividerColorDark": "#0B1512",
+  "backgroundColor": "#0B1512",
+  "enableNotifications": false,
+  "startUrl": "/index.html",
+  "iconUrl": "https://REPLACE_WITH_YOUR_DOMAIN/assets/icon-512.png",
+  "maskableIconUrl": "https://REPLACE_WITH_YOUR_DOMAIN/assets/icon-maskable-512.png",
+  "webManifestUrl": "https://REPLACE_WITH_YOUR_DOMAIN/manifest.webmanifest",
+  "appVersion": "1.1.0",
+  "appVersionCode": 2,
+  "orientation": "portrait",
+  "fallbackType": "customtabs",
+  "features": {
+    "locationDelegation": { "enabled": true }
+  },
+  "signingKey": { "path": "./android.keystore", "alias": "namaj-shikkha" },
+  "minSdkVersion": 21,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "shortcuts": [
+    { "name": "Qibla", "short_name": "Qibla", "url": "/index.html#qibla", "icon": "/assets/icon-192.png" },
+    { "name": "Salah guide", "short_name": "Salah", "url": "/index.html#salah", "icon": "/assets/icon-192.png" },
+    { "name": "Duas", "short_name": "Duas", "url": "/index.html#duas", "icon": "/assets/icon-192.png" }
+  ]
+}

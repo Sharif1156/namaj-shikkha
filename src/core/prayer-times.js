@@ -12,6 +12,8 @@
  * and expected; mosques apply their own safety margins.
  */
 
+import { toHijri } from './hijri.js';
+
 const DEG = Math.PI / 180;
 
 const dsin = (d) => Math.sin(d * DEG);
@@ -57,6 +59,7 @@ export const METHODS = {
     name: 'Umm al-Qura University, Makkah',
     fajr: 18.5,
     isha: { minutes: 90 },
+    ishaRamadanMinutes: 120, // Umm al-Qura extends Isha to 120 min in Ramadan
   },
   Karachi: {
     name: 'University of Islamic Sciences, Karachi',
@@ -111,7 +114,9 @@ export const METHODS = {
     isha: 15,
   },
   Moonsighting: {
-    name: 'Moonsighting Committee',
+    // Approximation only: the real Moonsighting Committee rules are seasonal
+    // and latitude-dependent. 18°/18° is the closest fixed-angle equivalent.
+    name: 'Moonsighting Committee (approx. 18°/18°)',
     fajr: 18,
     isha: 18,
   },
@@ -296,7 +301,8 @@ export function computePrayerTimes(opts) {
 
   // Isha as a fixed interval after Maghrib (Umm al-Qura & friends).
   if (typeof ishaSpec === 'object' && ishaSpec && Number.isFinite(t.maghrib)) {
-    t.isha = t.maghrib + ishaSpec.minutes / 60;
+    const inRamadan = params.ishaRamadanMinutes && toHijri(year, month, day).month === 9;
+    t.isha = t.maghrib + (inRamadan ? params.ishaRamadanMinutes : ishaSpec.minutes) / 60;
   }
 
   // High-latitude safety net for Fajr and Isha.
@@ -305,11 +311,6 @@ export function computePrayerTimes(opts) {
     t.fajr = adjustHighLat(t.fajr, t.sunrise, fajrAngle, night, 'ccw', highLatitudeRule);
     if (typeof ishaSpec === 'number') {
       t.isha = adjustHighLat(t.isha, t.sunset, ishaSpec, night, 'cw', highLatitudeRule);
-    }
-    if (Number.isFinite(t.maghrib) && params.maghrib) {
-      if (timeDiff(t.maghrib, t.sunset) > nightPart(maghribAngle, night, highLatitudeRule)) {
-        // only meaningful for methods that use a maghrib angle
-      }
     }
   }
 

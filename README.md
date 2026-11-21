@@ -4,13 +4,15 @@ An offline-first Islamic prayer companion for the web: accurate prayer times,
 a live Qibla compass, a step-by-step salah guide, duas, a tasbih counter, the
 99 Names of Allah, and a Hijri calendar — in **Bengali and English**.
 
-Built as a single installable PWA. No account, no tracking, no ads, no network
+Built as a single installable PWA, and ready to ship to Google Play as a
+Trusted Web Activity — see [PLAY_STORE.md](./PLAY_STORE.md). No account, no tracking, no ads, no network
 required after the first load.
 
 ```bash
 npm install
 npm start          # http://localhost:5173
-npm test           # 112 tests
+npm test           # 128 tests
+npm run verify     # tests + content lint + service-worker checks
 ```
 
 ---
@@ -53,12 +55,15 @@ coordinates:
 - **15 calculation methods** — MWL, ISNA, Egypt, Umm al-Qura, Karachi,
   Tehran, Jafari, Gulf, Kuwait, Qatar, Singapore, Turkey, France, Russia,
   Moonsighting.
-- **Asr madhab** — Shafi/Maliki/Hanbali (×1 shadow) or Hanafi (×2).
+- **Asr madhab** — Hanafi (×2, the default, as followed in Bangladesh) or
+  Shafi/Maliki/Hanbali (×1 shadow).
 - **High-latitude rules** — middle of the night, angle-based, one-seventh.
   Fajr and Isha remain correct where the sun never reaches the twilight angle.
 - **Extras** — Imsak, midnight, last third of the night, and an optional
   per-prayer minute offset so you can match your local mosque exactly.
-- **DST-aware** by city when the browser supports IANA time zones.
+- **DST-aware** for built-in cities *and* GPS locations: only the IANA zone is
+  stored and the UTC offset is recomputed for each date.
+- Umm al-Qura Isha is 120 minutes after Maghrib during Ramadan.
 
 ### Qibla
 Great-circle bearing to the Kaaba plus haversine distance. Uses
@@ -105,8 +110,13 @@ src/
   ui/dom.js                 tiny DOM helpers, escaping, countdown
   views/                    home · qibla · salah · duas · tasbih · more
   data/                     salah.json · duas.json · names99.json
-tests/                      112 tests across 6 files
-scripts/                    content validation, SW manifest check, icons
+tests/                      128 tests across 7 files
+scripts/                    content validation, SW check + version stamp,
+                            icons, Play Store screenshots
+privacy.html                bilingual privacy policy (required by Play)
+twa-manifest.json           Bubblewrap / TWA config
+.well-known/assetlinks.json Digital Asset Links template
+store/                      Play listing text, feature graphic, screenshots
 ```
 
 ### Design decisions
@@ -127,7 +137,7 @@ so a crafted city name or search query cannot inject HTML.
 ## Testing
 
 ```bash
-npm test                 # all 112 tests
+npm test                 # all 128 tests
 npm run lint:content     # religious content integrity
 node scripts/check-sw-manifest.mjs   # precache list vs filesystem
 ```

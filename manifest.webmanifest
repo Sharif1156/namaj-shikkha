@@ -1,6 +1,6 @@
 {
   "name": "Namaj Shikkha — নামাজ শিক্ষা",
-  "short_name": "Namaj Shikkha",
+  "short_name": "নামাজ শিক্ষা",
   "description": "Offline prayer times, Qibla, step-by-step salah guide, duas, tasbih and Hijri calendar in Bengali and English.",
   "start_url": "./index.html",
   "scope": "./",
@@ -10,7 +10,11 @@
   "theme_color": "#0f3d33",
   "lang": "bn",
   "dir": "ltr",
-  "categories": ["lifestyle", "education", "utilities"],
+  "categories": [
+    "lifestyle",
+    "education",
+    "utilities"
+  ],
   "icons": [
     {
       "src": "./assets/icon.svg",
@@ -38,8 +42,84 @@
     }
   ],
   "shortcuts": [
-    { "name": "Qibla", "url": "./index.html#qibla" },
-    { "name": "Salah guide", "url": "./index.html#salah" },
-    { "name": "Duas", "url": "./index.html#duas" }
+    {
+      "name": "Qibla · কিবলা",
+      "short_name": "Qibla",
+      "url": "./index.html#qibla",
+      "icons": [
+        {
+          "src": "./assets/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Salah guide · নামাজ শিক্ষা",
+      "short_name": "Salah",
+      "url": "./index.html#salah",
+      "icons": [
+        {
+          "src": "./assets/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Duas · দোয়া",
+      "short_name": "Duas",
+      "url": "./index.html#duas",
+      "icons": [
+        {
+          "src": "./assets/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "id": "./",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "prefer_related_applications": false,
+  "screenshots": [
+    {
+      "src": "./store/screenshots/01-times.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Prayer times"
+    },
+    {
+      "src": "./store/screenshots/02-qibla.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Qibla compass"
+    },
+    {
+      "src": "./store/screenshots/03-salah.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Salah guide"
+    },
+    {
+      "src": "./store/screenshots/04-duas.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Duas"
+    },
+    {
+      "src": "./store/screenshots/05-tasbih.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Tasbih"
+    }
   ]
 }

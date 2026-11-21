@@ -2,12 +2,12 @@
  * home.js — next prayer, countdown, and the day's timetable.
  */
 
-import { formatHours, nextPrayer, hoursAfter, PRAYER_LABELS, OBLIGATORY } from '../core/prayer-times.js';
+import { nextPrayer, currentPrayer, hoursAfter, PRAYER_LABELS, OBLIGATORY } from '../core/prayer-times.js';
 import { timesFor, nowHours, dateKey } from '../services.js';
 import { activeLocation, locationLabel, get } from '../state.js';
 import { el, countdown, digits, esc, toast } from '../ui/dom.js';
 import { t, monthName } from '../core/i18n.js';
-import { requestPosition, cityTimezone, CITIES } from '../core/location.js';
+import { requestPosition, nearestCity, cityZone, deviceZone } from '../core/location.js';
 import * as state from '../state.js';
 
 const ICONS = {
@@ -30,6 +30,7 @@ export function create(ctx) {
   let times = null;
   let dayTimes = null;
   let day;
+  let tomorrowFajr = { key: null, hours: NaN };
 
   function refresh() {
     const now = new Date();
@@ -108,16 +109,18 @@ export function create(ctx) {
     }
     try {
       const pos = await requestPosition();
-      // Pick the nearest known city for a friendly label and a DST-aware zone.
-      let label = t('home.location');
-      let tz = -new Date().getTimezoneOffset() / 60;
-      const near = CITIES.map((c) => ({
-        c,
-        d: Math.abs(c.latitude - pos.latitude) + Math.abs(c.longitude - pos.longitude),
-      })).sort((a, b) => a.d - b.d)[0];
-      if (near && near.d < 1.5) tz = cityTimezone(near.c);
+      // Label with the nearest known city (within ~50 km) when there is one.
+      // Only the IANA zone is stored; the UTC offset is derived per date so
+      // daylight-saving changes are always honoured.
+      const { city } = nearestCity(pos.latitude, pos.longitude);
       state.set({
-        coords: { latitude: pos.latitude, longitude: pos.longitude, label, timezone: tz },
+        coords: {
+          latitude: pos.latitude,
+          longitude: pos.longitude,
+          label: city ? city.en : 'My location',
+          labelBn: city ? city.bn : 'আমার অবস্থান',
+          zone: (city && cityZone(city)) || deviceZone(),
+        },
       });
       toast(t('home.location'));
       ctx.rerender();
@@ -146,11 +149,11 @@ export function create(ctx) {
         const isSecondary = key === 'sunrise' || key === 'imsak';
         const obligatory = OBLIGATORY.includes(key);
         // "current" = the obligatory prayer whose window we are inside
-        let isCurrent = false;
-        if (obligatory) {
-          const prevObligatory = OBLIGATORY.filter((k) => times[k] <= now).pop();
-          isCurrent = prevObligatory === key;
-        }
+        // After midnight and before Fajr, the running prayer is still Isha.
+        // Fajr's window closes at sunrise; between sunrise and Dhuhr no prayer is "current".
+        const cur = currentPrayer(times, now);
+        const fajrOver = cur?.key === 'fajr' && Number.isFinite(times.sunrise) && now >= times.sunrise;
+        const isCurrent = obligatory && !fajrOver && cur?.key === key;
         const cls = [
           'prayer-row',
           isCurrent ? 'is-current' : '',
@@ -175,6 +178,20 @@ export function create(ctx) {
     const next = nextPrayer(times, nowH);
     if (!next) return;
 
+    // After Isha the next prayer is tomorrow's Fajr, which is a few minutes
+    // different from today's: compute it for real instead of reusing today's.
+    if (next.tomorrow) {
+      const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+      const key = dateKey(tomorrow);
+      if (tomorrowFajr.key !== key) {
+        tomorrowFajr = { key, hours: timesFor(tomorrow, get()).fajr };
+      }
+      if (Number.isFinite(tomorrowFajr.hours)) {
+        next.hours = tomorrowFajr.hours;
+        next.inHours = 24 - nowH + tomorrowFajr.hours;
+      }
+    }
+
     const labels = PRAYER_LABELS[next.key];
     const locale = ctx.locale();
     const nameEl = root.querySelector('[data-hero="name"]');
@@ -185,7 +202,7 @@ export function create(ctx) {
       `${ctx.fmt(next.hours)}${next.tomorrow ? ` · ${t('home.tomorrow')}` : ''}`;
 
     const msLeft = next.inHours * 3600 * 1000;
-    root.querySelector('[data-hero="count"]').textContent = countdown(msLeft);
+    root.querySelector('[data-hero="count"]').textContent = countdown(msLeft, locale);
 
     // Progress across the current interval.
     const prevKey = OBLIGATORY.filter((k) => Number.isFinite(times[k]) && times[k] <= nowH).pop();

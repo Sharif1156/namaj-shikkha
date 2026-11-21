@@ -4,12 +4,12 @@
 
 import * as storage from './core/storage.js';
 import { detectLocale } from './core/i18n.js';
-import { findCity, cityTimezone, currentTimezone } from './core/location.js';
+import { findCity, cityTimezone, currentTimezone, zoneOffset } from './core/location.js';
 
 /**
  * Defaults chosen for the primary audience (Bangladesh). Karachi (18°/18°)
- * is the method most commonly used there; it is only a starting point and is
- * fully configurable in Settings.
+ * and the Hanafi Asr (shadow ×2) are what is most commonly followed there;
+ * they are only a starting point and are fully configurable in Settings.
  */
 export const DEFAULTS = Object.freeze({
   locale: null, // null = follow the browser
@@ -17,7 +17,8 @@ export const DEFAULTS = Object.freeze({
   hour12: false,
   haptics: true,
   method: 'Karachi',
-  madhab: 'shafi',
+  madhab: 'hanafi',
+  dhuhrMinutes: 1, // small safety margin after solar noon (zawal)
   highLat: 'nightMiddle',
   cityId: 'dhaka',
   coords: null, // { latitude, longitude, label } — overrides cityId
@@ -71,7 +72,9 @@ export function activeLocation(date = new Date()) {
       longitude: state.coords.longitude,
       label: state.coords.label || 'My location',
       labelBn: state.coords.labelBn || 'আমার অবস্থান',
-      timezone: state.coords.timezone ?? currentTimezone(),
+      // Recomputed for the requested date so a DST change never leaves a
+      // stale offset behind.
+      timezone: zoneOffset(state.coords.zone, date) ?? currentTimezone(date),
       isGps: true,
     };
   }
