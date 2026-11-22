@@ -22,12 +22,17 @@ export function create(ctx) {
 
   function build() {
     const page = stack[stack.length - 1];
+    document.documentElement.dataset.subpage = page;
     tasbihInstance?.cleanup?.();
     tasbihInstance = null;
 
     if (page === 'tasbih') {
       tasbihInstance = createTasbih(ctx);
-      root.replaceChildren(tasbihInstance.root);
+      // Tasbih used to be a dead end: no Back button, and re-tapping the
+      // More tab did nothing while on this sub-page.
+      root.innerHTML = `${backButton()}`;
+      root.appendChild(tasbihInstance.root);
+      wireBack();
       return;
     }
     if (page === 'names') return renderNames();
@@ -207,17 +212,14 @@ export function create(ctx) {
       <div class="card" style="margin-top:14px;">
         <div class="row-between">
           <span>${esc(t('ramadan.suhoor'))}</span>
-          <strong style="font-variant-numeric:tabular-nums;">${esc(ctx.fmt(times.fajr))}</strong>
+          <strong style="font-variant-numeric:tabular-nums;">${esc(ctx.fmt(times.imsak))}</strong>
         </div>
         <div class="row-between">
           <span>${esc(t('ramadan.iftar'))}</span>
           <strong style="font-variant-numeric:tabular-nums;">${esc(ctx.fmt(times.maghrib))}</strong>
         </div>
-        <div class="row-between">
-          <span>${esc(t('times.imsak'))}</span>
-          <strong style="font-variant-numeric:tabular-nums;">${esc(ctx.fmt(times.imsak))}</strong>
-        </div>
       </div>
+      <p class="muted-text" style="margin-top:14px;">${esc(t('common.today'))}: ${esc(digits(now.getDate(), locale))} ${esc(monthName(now.getMonth(), locale))} ${esc(digits(now.getFullYear(), locale))}</p>
       <p class="muted-text" style="margin-top:14px;">${esc(t('calendar.note'))}</p>
     `;
     wireBack();

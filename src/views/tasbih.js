@@ -50,8 +50,8 @@ export function create(ctx) {
 
       <div style="display:flex;gap:10px;width:100%;max-width:320px;">
         <button class="btn btn--ghost btn--block" type="button" data-action="reset">${esc(t('tasbih.reset'))}</button>
-        <button class="btn btn--block" type="button" data-action="rounds" disabled>
-          ${esc(digits(totalCount(state), locale))}
+        <button class="btn btn--block" type="button" data-action="rounds" data-total disabled>
+          ${esc(t('tasbih.total'))}: ${esc(digits(totalCount(state), locale))}
         </button>
       </div>
     `;
@@ -86,6 +86,11 @@ export function create(ctx) {
 
     const dial = root.querySelector('[data-dial]');
     if (dial) dial.style.setProperty('--p', progress(state));
+
+    // Keep the labelled total in sync too; it used to show the pre-round
+    // value until the view was rebuilt.
+    const totalEl = root.querySelector('[data-total]');
+    if (totalEl) totalEl.textContent = `${t('tasbih.total')}: ${digits(totalCount(state), locale)}`;
 
     if (result.completedRound) {
       toast(t('tasbih.complete'));

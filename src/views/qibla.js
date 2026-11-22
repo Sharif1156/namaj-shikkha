@@ -87,18 +87,24 @@ export function create(ctx) {
       window.addEventListener('deviceorientation', onOrientation, true);
       listening = true;
 
+      // Say so immediately: on a device with no magnetometer the button
+      // used to vanish with no status at all until the watchdog fired.
+      if (statusEl) statusEl.textContent = t('qibla.waiting');
+
       // If no usable heading arrives (no magnetometer, or only relative
-      // events), say so instead of leaving a dead needle.
+      // events), say so instead of leaving a dead needle — and bring the
+      // button back so the user can try again.
       watchdog = setTimeout(() => {
         if (heading === null) {
           const s = root.querySelector('[data-status]');
           if (s) s.textContent = t('qibla.noCompass');
+          const btn = root.querySelector('[data-action="enable"]');
+          if (btn) btn.style.display = '';
         }
       }, 2500);
 
       const btn = root.querySelector('[data-action="enable"]');
       if (btn) btn.style.display = 'none';
-      if (statusEl) statusEl.textContent = '';
     } catch {
       if (statusEl) statusEl.textContent = t('qibla.noCompass');
     }

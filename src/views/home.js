@@ -204,14 +204,21 @@ export function create(ctx) {
     const msLeft = next.inHours * 3600 * 1000;
     root.querySelector('[data-hero="count"]').textContent = countdown(msLeft, locale);
 
-    // Progress across the current interval.
+    // Progress across the current interval. When Isha is unknown (polar
+    // latitudes with the "none" rule) there is no previous prayer to
+    // measure from, so hide the bar instead of computing a nonsense value
+    // from a -24h fallback.
     const prevKey = OBLIGATORY.filter((k) => Number.isFinite(times[k]) && times[k] <= nowH).pop();
-    const prevHours = prevKey ? times[prevKey] : (times.isha ?? 0) - 24;
-    const span = hoursAfter(prevHours, next.hours) || 1;
-    const elapsed = hoursAfter(prevHours, nowH);
-    const pct = Math.max(0, Math.min(100, (elapsed / span) * 100));
+    const prevHours = prevKey ? times[prevKey] : Number.isFinite(times.isha) ? times.isha - 24 : null;
     const bar = root.querySelector('[data-hero="bar"]');
-    if (bar) bar.style.width = `${pct}%`;
+    if (prevHours === null) {
+      if (bar) bar.style.width = '0%';
+    } else {
+      const span = hoursAfter(prevHours, next.hours) || 1;
+      const elapsed = hoursAfter(prevHours, nowH);
+      const pct = Math.max(0, Math.min(100, (elapsed / span) * 100));
+      if (bar) bar.style.width = `${pct}%`;
+    }
 
     // Refresh the highlighted rows once a minute.
     if (!tick._lastListMinute || tick._lastListMinute !== now.getMinutes()) {
