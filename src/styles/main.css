@@ -11,9 +11,9 @@
   --gold-500: #d4a94a;
   --gold-400: #e5c579;
 
-  --bg: #f6f5f1;
+  --bg: #ffffff;
   --surface: #ffffff;
-  --surface-2: #f0efe9;
+  --surface-2: #f4f4f0;
   --border: #e2e0d6;
   --text: #17211d;
   --text-muted: #5d6b64;
@@ -39,35 +39,9 @@
   --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  html[data-theme="auto"] {
-    --bg: #0b1512;
-    --surface: #14211d;
-    --surface-2: #1b2b26;
-    --border: #263a33;
-    --text: #eaf2ee;
-    --text-muted: #9db0a8;
-    --accent: #2f9078;
-    --accent-contrast: #04120f;
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-    --shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
-    --shadow-lg: 0 20px 44px rgba(0, 0, 0, 0.55);
-  }
-}
+/* No dark theme: the app is light-only by design — white content with
+   each page's own accent colour, like the reference screenshots. */
 
-html[data-theme="dark"] {
-  --bg: #0b1512;
-  --surface: #14211d;
-  --surface-2: #1b2b26;
-  --border: #263a33;
-  --text: #eaf2ee;
-  --text-muted: #9db0a8;
-  --accent: #2f9078;
-  --accent-contrast: #04120f;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
-  --shadow-lg: 0 20px 44px rgba(0, 0, 0, 0.55);
-}
 
 *,
 *::before,
@@ -132,8 +106,8 @@ html[lang="bn"] body {
   height: var(--topbar-h);
   padding: 0 16px;
   padding-top: env(safe-area-inset-top, 0px);
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: blur(14px);
+  background: var(--accent);
+  color: var(--accent-contrast);
   border-bottom: 1px solid transparent;
   transition: border-color 0.2s;
 }
@@ -150,7 +124,7 @@ html[lang="bn"] body {
 .topbar__mark {
   width: 28px;
   height: 28px;
-  color: var(--accent);
+  color: var(--accent-contrast);
   flex: none;
 }
 .topbar__titles {
@@ -283,10 +257,10 @@ html[lang="bn"] body {
   overflow: hidden;
   border-radius: var(--radius-lg);
   padding: 22px 20px;
-  color: #f4fbf8;
+  color: var(--accent-contrast);
   background:
-    radial-gradient(120% 150% at 82% 8%, rgba(212, 169, 74, 0.28) 0%, transparent 52%),
-    linear-gradient(152deg, var(--emerald-700) 0%, var(--emerald-900) 100%);
+    radial-gradient(120% 150% at 82% 8%, rgba(255, 255, 255, 0.22) 0%, transparent 52%),
+    linear-gradient(152deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 76%, #000) 100%);
   box-shadow: var(--shadow-lg);
 }
 
@@ -1042,10 +1016,9 @@ html[lang="bn"] body {
    and the More sub-pages each have their own shade too (Tasbih green,
    99 Names rose, Hijri Calendar indigo, Ramadan sunset orange, Settings
    slate). The accent flows
-   through the topbar mark, hero, buttons, chips, prayer rows and the
-   active tab, so a whole page changes colour at once.
-   These rules sit last so they win over the theme blocks above; the
-   dark variants use lighter accents that stay readable on dark surfaces. */
+   through the topbar, hero, buttons, chips, prayer rows and the
+   active tab, so a whole page changes colour at once, while the content
+   itself stays white. The app is light-only: there is no dark theme. */
 
 html[data-route="home"] { --accent: #15803d; --accent-contrast: #ffffff; }
 html[data-route="qibla"] { --accent: #1d4ed8; --accent-contrast: #ffffff; }
@@ -1056,52 +1029,3 @@ html[data-route="more"][data-subpage="names"] { --accent: #be185d; --accent-cont
 html[data-route="more"][data-subpage="calendar"] { --accent: #4338ca; --accent-contrast: #ffffff; }
 html[data-route="more"][data-subpage="ramadan"] { --accent: #c2410c; --accent-contrast: #ffffff; }
 html[data-route="more"][data-subpage="settings"] { --accent: #334155; --accent-contrast: #ffffff; }
-
-html[data-theme="dark"][data-route="home"],
-html[data-theme="dark"][data-route="more"][data-subpage="tasbih"] { --accent: #34d399; --accent-contrast: #04120f; }
-html[data-theme="dark"][data-route="qibla"] { --accent: #60a5fa; --accent-contrast: #04122e; }
-html[data-theme="dark"][data-route="salah"] { --accent: #fbbf24; --accent-contrast: #04120f; }
-html[data-theme="dark"][data-route="more"][data-subpage="names"] { --accent: #f9a8d4; --accent-contrast: #3f0a1e; }
-html[data-theme="dark"][data-route="duas"] { --accent: #2dd4bf; --accent-contrast: #04120f; }
-html[data-theme="dark"][data-route="more"][data-subpage="calendar"] { --accent: #a5b4fc; --accent-contrast: #04122e; }
-html[data-theme="dark"][data-route="more"][data-subpage="ramadan"] { --accent: #fdba74; --accent-contrast: #431407; }
-html[data-theme="dark"][data-route="more"][data-subpage="settings"] { --accent: #cbd5e1; --accent-contrast: #0f172a; }
-
-@media (prefers-color-scheme: dark) {
-  html[data-theme="auto"][data-route="home"],
-  html[data-theme="auto"][data-route="more"][data-subpage="tasbih"] { --accent: #34d399; --accent-contrast: #04120f; }
-  html[data-theme="auto"][data-route="qibla"] { --accent: #60a5fa; --accent-contrast: #04122e; }
-  html[data-theme="auto"][data-route="salah"] { --accent: #fbbf24; --accent-contrast: #04120f; }
-  html[data-theme="auto"][data-route="more"][data-subpage="names"] { --accent: #f9a8d4; --accent-contrast: #3f0a1e; }
-  html[data-theme="auto"][data-route="duas"] { --accent: #2dd4bf; --accent-contrast: #04120f; }
-  html[data-theme="auto"][data-route="more"][data-subpage="calendar"] { --accent: #a5b4fc; --accent-contrast: #04122e; }
-  html[data-theme="auto"][data-route="more"][data-subpage="ramadan"] { --accent: #fdba74; --accent-contrast: #431407; }
-  html[data-theme="auto"][data-route="more"][data-subpage="settings"] { --accent: #cbd5e1; --accent-contrast: #0f172a; }
-}
-
-/* ------------------------------------------- per-page surface tint
-   The accent alone is not enough on pages with few buttons or chips
-   (99 Names, Ramadan, Settings): they still read as the default green.
-   So the whole page is tinted with its own accent — background, cards
-   and secondary surfaces — and the tab bar tints along with it. The tint
-   is deliberately subtle so text stays readable in both themes. */
-
-html[data-route] {
-  --bg: color-mix(in srgb, var(--accent) 8%, #f6f5f1);
-  --surface: color-mix(in srgb, var(--accent) 5%, #ffffff);
-  --surface-2: color-mix(in srgb, var(--accent) 12%, #f0efe9);
-}
-
-html[data-theme="dark"][data-route] {
-  --bg: color-mix(in srgb, var(--accent) 14%, #0b1512);
-  --surface: color-mix(in srgb, var(--accent) 12%, #14211d);
-  --surface-2: color-mix(in srgb, var(--accent) 18%, #1b2b26);
-}
-
-@media (prefers-color-scheme: dark) {
-  html[data-theme="auto"][data-route] {
-    --bg: color-mix(in srgb, var(--accent) 14%, #0b1512);
-    --surface: color-mix(in srgb, var(--accent) 12%, #14211d);
-    --surface-2: color-mix(in srgb, var(--accent) 18%, #1b2b26);
-  }
-}
