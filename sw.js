@@ -9,7 +9,7 @@
  * `npm run stamp`; CI fails if it is stale, so it cannot be forgotten.
  */
 
-const VERSION = 'bc0dbfbe60';
+const VERSION = '6e3d8971e5';
 const CACHE = `namaj-${VERSION}`;
 
 const CORE = [
@@ -98,7 +98,9 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return; // never cache third parties
-  if (url.pathname.startsWith('/.well-known/')) return; // Digital Asset Links etc.
+  // Match anywhere in the path: on GitHub Pages the file lives under the
+  // repo subpath (/namaj-shikkha/.well-known/…), not at the domain root.
+  if (url.pathname.includes('/.well-known/')) return; // Digital Asset Links etc.
 
   // Navigations fall back to the app shell so deep links work offline.
   event.respondWith(
