@@ -299,9 +299,7 @@ export function create(ctx) {
         <div class="row-between">
           <span>${esc(t('settings.theme'))}</span>
           <div class="segmented">
-            <button type="button" data-toggle="theme" data-value="auto" aria-pressed="${s.theme === 'auto'}">Auto</button>
-            <button type="button" data-toggle="theme" data-value="light" aria-pressed="${s.theme === 'light'}">☀</button>
-            <button type="button" data-toggle="theme" data-value="dark" aria-pressed="${s.theme === 'dark'}">☾</button>
+            <button type="button" data-toggle="theme" data-value="light" aria-pressed="true">☀</button>
           </div>
         </div>
         <div class="row-between">
