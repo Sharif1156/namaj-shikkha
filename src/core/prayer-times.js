@@ -433,7 +433,9 @@ export function formatHours(hours, { hour12 = false, locale = 'en' } = {}) {
   const suffix = h >= 12 ? 'PM' : 'AM';
   h = h % 12;
   if (h === 0) h = 12;
-  return `${localiseDigits(`${h}:${mm}`, locale)} ${suffix}`;
+  // Localise the suffix too: "১:৩০ PM" in a Bengali UI is half-translated.
+  const suffixOut = locale === 'bn' ? (suffix === 'PM' ? 'পিএম' : 'এএম') : suffix;
+  return `${localiseDigits(`${h}:${mm}`, locale)} ${suffixOut}`;
 }
 
 /**
@@ -470,7 +472,9 @@ export const PRAYER_LABELS = {
 export function nextPrayer(times, nowHours) {
   for (const key of OBLIGATORY) {
     const t = times[key];
-    if (Number.isFinite(t) && t > nowHours) {
+    // >= so that at the exact minute of a prayer it is still "next"
+    // (currentPrayer already reports it as current with <=).
+    if (Number.isFinite(t) && t >= nowHours) {
       return { key, hours: t, inHours: t - nowHours, tomorrow: false };
     }
   }

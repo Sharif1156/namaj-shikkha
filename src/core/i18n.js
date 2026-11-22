@@ -25,7 +25,7 @@ const STRINGS = {
     'home.location': 'Location',
     'home.useLocation': 'Use my location',
     'home.locating': 'Finding your location…',
-    'home.locationDenied': 'Location unavailable — pick a city below.',
+    'home.locationDenied': 'Location unavailable — pick a city in Settings.',
     'home.tomorrow': 'tomorrow',
     'home.sunrise': 'Sunrise',
     'home.sunset': 'Sunset',
@@ -44,6 +44,7 @@ const STRINGS = {
     'qibla.distance': 'Distance to Makkah',
     'qibla.enable': 'Enable compass',
     'qibla.noCompass': 'This device has no compass. Use the bearing and your phone\'s map compass.',
+    'qibla.waiting': 'Waiting for compass…',
     'qibla.facing': 'Facing the Qibla',
     'qibla.turn': 'Turn',
     'qibla.calibrate': 'If the needle drifts, move your phone in a figure-8 to calibrate.',
@@ -64,6 +65,7 @@ const STRINGS = {
     'duas.source': 'Source',
 
     'tasbih.title': 'Tasbih',
+    'tasbih.total': 'Total',
     'tasbih.reset': 'Reset',
     'tasbih.target': 'Target',
     'tasbih.complete': 'Complete — may Allah accept it.',
@@ -122,7 +124,7 @@ const STRINGS = {
 
     'nav.times': 'নামাজ',
     'nav.qibla': 'কিবলা',
-    'nav.salah': 'নামাজ শিক্ষা',
+    'nav.salah': 'সালাত',
     'nav.duas': 'দোয়া',
     'nav.more': 'আরও',
 
@@ -133,7 +135,7 @@ const STRINGS = {
     'home.location': 'অবস্থান',
     'home.useLocation': 'আমার অবস্থান ব্যবহার করুন',
     'home.locating': 'আপনার অবস্থান খোঁজা হচ্ছে…',
-    'home.locationDenied': 'অবস্থান পাওয়া যায়নি — নিচে থেকে শহর বাছুন।',
+    'home.locationDenied': 'অবস্থান পাওয়া যায়নি — সেটিংস থেকে শহর বাছুন।',
     'home.tomorrow': 'আগামীকাল',
     'home.sunrise': 'সূর্যোদয়',
     'home.sunset': 'সূর্যাস্ত',
@@ -152,6 +154,7 @@ const STRINGS = {
     'qibla.distance': 'মক্কার দূরত্ব',
     'qibla.enable': 'কম্পাস চালু করুন',
     'qibla.noCompass': 'এই ডিভাইসে কম্পাস নেই। দিক নির্ণয়ের মান ব্যবহার করুন।',
+    'qibla.waiting': 'কম্পাসের অপেক্ষায়…',
     'qibla.facing': 'কিবলামুখী',
     'qibla.turn': 'ঘুরুন',
     'qibla.calibrate': 'কাঁটা সরে গেলে ফোনটি ৮ আকৃতিতে ঘুরিয়ে ক্যালিব্রেট করুন।',
@@ -172,6 +175,7 @@ const STRINGS = {
     'duas.source': 'সূত্র',
 
     'tasbih.title': 'তাসবিহ',
+    'tasbih.total': 'মোট',
     'tasbih.reset': 'রিসেট',
     'tasbih.target': 'লক্ষ্য',
     'tasbih.complete': 'সম্পন্ন — আল্লাহ কবুল করুন।',
