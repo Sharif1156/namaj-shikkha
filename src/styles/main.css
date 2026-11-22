@@ -867,6 +867,11 @@ html[lang="bn"] body {
   place-items: center;
   border: 1px solid var(--border);
 }
+.tasbih-dial__inner > span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 .tasbih-count {
   font-size: 54px;
   font-weight: 700;
@@ -1029,4 +1034,45 @@ html[lang="bn"] body {
   .hero__name {
     font-size: 34px;
   }
+}
+
+/* ------------------------------------------------- per-page colours
+   Each page gets its own accent so the app does not look like one flat
+   colour throughout: Prayer is green, Qibla blue, Salah gold, Duas teal,
+   and the More sub-pages each have their own shade too. The accent flows
+   through the topbar mark, hero, buttons, chips, prayer rows and the
+   active tab, so a whole page changes colour at once.
+   These rules sit last so they win over the theme blocks above; the
+   dark variants use lighter accents that stay readable on dark surfaces. */
+
+html[data-route="home"] { --accent: #15803d; --accent-contrast: #ffffff; }
+html[data-route="qibla"] { --accent: #1d4ed8; --accent-contrast: #ffffff; }
+html[data-route="salah"] { --accent: #b45309; --accent-contrast: #ffffff; }
+html[data-route="duas"] { --accent: #0f766e; --accent-contrast: #ffffff; }
+html[data-route="more"][data-subpage="tasbih"] { --accent: #15803d; --accent-contrast: #ffffff; }
+html[data-route="more"][data-subpage="names"] { --accent: #b45309; --accent-contrast: #ffffff; }
+html[data-route="more"][data-subpage="calendar"] { --accent: #4338ca; --accent-contrast: #ffffff; }
+html[data-route="more"][data-subpage="ramadan"] { --accent: #6d28d9; --accent-contrast: #ffffff; }
+html[data-route="more"][data-subpage="settings"] { --accent: #475569; --accent-contrast: #ffffff; }
+
+html[data-theme="dark"][data-route="home"],
+html[data-theme="dark"][data-route="more"][data-subpage="tasbih"] { --accent: #34d399; --accent-contrast: #04120f; }
+html[data-theme="dark"][data-route="qibla"] { --accent: #60a5fa; --accent-contrast: #04122e; }
+html[data-theme="dark"][data-route="salah"],
+html[data-theme="dark"][data-route="more"][data-subpage="names"] { --accent: #fbbf24; --accent-contrast: #04120f; }
+html[data-theme="dark"][data-route="duas"] { --accent: #2dd4bf; --accent-contrast: #04120f; }
+html[data-theme="dark"][data-route="more"][data-subpage="calendar"] { --accent: #a5b4fc; --accent-contrast: #04122e; }
+html[data-theme="dark"][data-route="more"][data-subpage="ramadan"] { --accent: #c4b5fd; --accent-contrast: #1e1033; }
+html[data-theme="dark"][data-route="more"][data-subpage="settings"] { --accent: #94a3b8; --accent-contrast: #04120f; }
+
+@media (prefers-color-scheme: dark) {
+  html[data-theme="auto"][data-route="home"],
+  html[data-theme="auto"][data-route="more"][data-subpage="tasbih"] { --accent: #34d399; --accent-contrast: #04120f; }
+  html[data-theme="auto"][data-route="qibla"] { --accent: #60a5fa; --accent-contrast: #04122e; }
+  html[data-theme="auto"][data-route="salah"],
+  html[data-theme="auto"][data-route="more"][data-subpage="names"] { --accent: #fbbf24; --accent-contrast: #04120f; }
+  html[data-theme="auto"][data-route="duas"] { --accent: #2dd4bf; --accent-contrast: #04120f; }
+  html[data-theme="auto"][data-route="more"][data-subpage="calendar"] { --accent: #a5b4fc; --accent-contrast: #04122e; }
+  html[data-theme="auto"][data-route="more"][data-subpage="ramadan"] { --accent: #c4b5fd; --accent-contrast: #1e1033; }
+  html[data-theme="auto"][data-route="more"][data-subpage="settings"] { --accent: #94a3b8; --accent-contrast: #04120f; }
 }
