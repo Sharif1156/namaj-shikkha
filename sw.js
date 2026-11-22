@@ -9,7 +9,7 @@
  * `npm run stamp`; CI fails if it is stale, so it cannot be forgotten.
  */
 
-const VERSION = '1183ff6100';
+const VERSION = '463aee5124';
 const CACHE = `namaj-${VERSION}`;
 
 const CORE = [
