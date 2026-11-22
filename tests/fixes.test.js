@@ -6,7 +6,8 @@ import { resolve, dirname } from 'node:path';
 import * as state from '../src/state.js';
 import { zoneOffset, cityTimezone, findCity, cityZone } from '../src/core/location.js';
 import { turnDirection } from '../src/core/qibla.js';
-import { computePrayerTimes, METHODS } from '../src/core/prayer-times.js';
+import { computePrayerTimes, METHODS, formatHours, nextPrayer } from '../src/core/prayer-times.js';
+import * as storage from '../src/core/storage.js';
 import { fromHijri } from '../src/core/hijri.js';
 import { countdown } from '../src/ui/dom.js';
 
@@ -99,6 +100,45 @@ describe('countdown localisation', () => {
   it('renders Bengali words and digits', () => {
     expect(countdown(5280000, 'bn')).toBe('১ ঘণ্টা ২৮ মি');
     expect(countdown(249000, 'bn')).toBe('৪ মি ০৯ সে');
+  });
+});
+
+describe('Bengali 12-hour clock', () => {
+  it('localises the AM/PM suffix too', () => {
+    expect(formatHours(13.5, { hour12: true, locale: 'bn' })).toBe('১:৩০ পিএম');
+    expect(formatHours(4.5, { hour12: true, locale: 'bn' })).toBe('৪:৩০ এএম');
+    expect(formatHours(13.5, { hour12: true, locale: 'en' })).toBe('1:30 PM');
+  });
+});
+
+describe('nextPrayer at the exact minute', () => {
+  it('still reports the prayer starting now as next', () => {
+    const times = { fajr: 4.983, sunrise: 6.3, dhuhr: 11.77, asr: 15.58, maghrib: 17.18, isha: 18.5 };
+    expect(nextPrayer(times, 4.983).key).toBe('fajr');
+  });
+});
+
+describe('persisted settings are validated on load', () => {
+  it('drops an unknown method, madhab and non-finite coords instead of breaking boot', () => {
+    storage.set('settings', {
+      method: 'NOPE',
+      madhab: 'x',
+      theme: 'neon',
+      coords: { latitude: NaN, longitude: 90 },
+      cityId: 'nowhere',
+    });
+    state.load();
+    expect(state.get().method).toBe(state.DEFAULTS.method);
+    expect(state.get().madhab).toBe(state.DEFAULTS.madhab);
+    expect(state.get().theme).toBe(state.DEFAULTS.theme);
+    expect(state.get().coords).toBeNull();
+    expect(state.get().cityId).toBe(state.DEFAULTS.cityId);
+    state.resetAll();
+    state.load();
+  });
+  it('ignores invalid values passed to set()', () => {
+    state.set({ method: 'NOPE' });
+    expect(state.get().method).toBe(state.DEFAULTS.method);
   });
 });
 
