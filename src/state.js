@@ -4,7 +4,8 @@
 
 import * as storage from './core/storage.js';
 import { detectLocale } from './core/i18n.js';
-import { findCity, cityTimezone, currentTimezone, zoneOffset } from './core/location.js';
+import { findCity, cityTimezone, currentTimezone, zoneOffset, CITIES } from './core/location.js';
+import { METHODS, MADHABS, HIGH_LATITUDE_RULES } from './core/prayer-times.js';
 
 /**
  * Defaults chosen for the primary audience (Bangladesh). Karachi (18°/18°)
@@ -29,9 +30,47 @@ export const DEFAULTS = Object.freeze({
 let state = { ...DEFAULTS };
 const listeners = new Set();
 
+/**
+ * Drop invalid saved values instead of letting them break boot: a tampered
+ * or legacy localStorage entry (unknown method, non-finite coordinates)
+ * used to make computePrayerTimes throw inside Home's create(), leaving
+ * #view blank. Unknown keys are dropped; valid keys are kept.
+ */
+function cleanPatch(patch) {
+  if (!patch || typeof patch !== 'object') return {};
+  const out = {};
+  if ('locale' in patch && (patch.locale === null || patch.locale === 'en' || patch.locale === 'bn')) {
+    out.locale = patch.locale;
+  }
+  if ('theme' in patch && ['auto', 'light', 'dark'].includes(patch.theme)) out.theme = patch.theme;
+  if ('hour12' in patch && typeof patch.hour12 === 'boolean') out.hour12 = patch.hour12;
+  if ('haptics' in patch && typeof patch.haptics === 'boolean') out.haptics = patch.haptics;
+  if ('method' in patch && patch.method in METHODS) out.method = patch.method;
+  if ('madhab' in patch && patch.madhab in MADHABS) out.madhab = patch.madhab;
+  if ('highLat' in patch && patch.highLat in HIGH_LATITUDE_RULES) out.highLat = patch.highLat;
+  if ('dhuhrMinutes' in patch && Number.isFinite(patch.dhuhrMinutes)) {
+    out.dhuhrMinutes = Math.max(0, Math.min(30, patch.dhuhrMinutes));
+  }
+  if ('cityId' in patch && CITIES.some((c) => c.id === patch.cityId)) out.cityId = patch.cityId;
+  if ('coords' in patch) {
+    const c = patch.coords;
+    out.coords =
+      c &&
+      typeof c === 'object' &&
+      Number.isFinite(c.latitude) &&
+      Number.isFinite(c.longitude)
+        ? c
+        : null;
+  }
+  if ('adjustments' in patch && patch.adjustments && typeof patch.adjustments === 'object') {
+    out.adjustments = patch.adjustments;
+  }
+  return out;
+}
+
 export function load() {
   const saved = storage.get('settings', {});
-  state = { ...DEFAULTS, ...(saved && typeof saved === 'object' ? saved : {}) };
+  state = { ...DEFAULTS, ...cleanPatch(saved) };
   return state;
 }
 
@@ -40,7 +79,7 @@ export function get() {
 }
 
 export function set(patch) {
-  state = { ...state, ...patch };
+  state = { ...state, ...cleanPatch(patch) };
   storage.set('settings', state);
   for (const fn of listeners) fn(state);
   return state;

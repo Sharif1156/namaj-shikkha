@@ -56,8 +56,16 @@ const ctx = {
   applyTheme,
   rerender: () => mount(currentRoute, { force: true }),
   onSettingsChange: () => {
+    // setLocale must run here too: it is only called in boot(), so without
+    // this a language change would sit in storage until the next reload.
+    setLocale(state.effectiveLocale());
+    applyTheme();
     applyStaticI18n();
-    mount(currentRoute, { force: true });
+    // Refresh in place instead of force-remounting: a remount rebuilds the
+    // More view from scratch and drops its navigation stack, kicking the
+    // user out of Settings after every single change.
+    if (currentView?.refresh) currentView.refresh();
+    else mount(currentRoute, { force: true });
   },
 };
 
@@ -94,6 +102,10 @@ function mount(route, { force = false } = {}) {
   currentView?.cleanup?.();
   currentRoute = route;
   mountedDay = dateKey();
+  // Per-page colour: each route gets its own accent (see the
+  // "Per-page colours" block at the end of src/styles/main.css).
+  document.documentElement.dataset.route = route;
+  if (route !== 'more') delete document.documentElement.dataset.subpage;
 
   const view = VIEWS[route](ctx);
   currentView = view;
@@ -131,7 +143,12 @@ function boot() {
   mount(VIEWS[initial] ? initial : 'home', { force: true });
 
   for (const btn of qsa(document, '.tabbar__btn')) {
-    btn.addEventListener('click', () => mount(btn.dataset.route));
+    btn.addEventListener('click', () => {
+      // Re-tapping the current tab goes back to that tab's top level
+      // (e.g. from a Tasbih/Settings sub-page back to the More menu).
+      // mount() alone would return early for the current route.
+      mount(btn.dataset.route, { force: btn.dataset.route === currentRoute });
+    });
   }
   window.addEventListener('hashchange', () => {
     const route = location.hash.slice(1) || 'home';
