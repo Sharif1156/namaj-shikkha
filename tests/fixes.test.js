@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { resolve, dirname } from 'node:path';
 
@@ -139,6 +140,27 @@ describe('persisted settings are validated on load', () => {
   it('ignores invalid values passed to set()', () => {
     state.set({ method: 'NOPE' });
     expect(state.get().method).toBe(state.DEFAULTS.method);
+  });
+});
+
+describe('per-page colours', () => {
+  const css = readFileSync(resolve(ROOT, 'src/styles/main.css'), 'utf8');
+
+  it('gives 99 Names its own rose accent, not Salah gold', () => {
+    expect(css).toContain('data-subpage="names"] { --accent: #be185d');
+    expect(css).toContain('data-subpage="names"] { --accent: #f9a8d4');
+  });
+  it('gives Ramadan its own sunset-orange accent, not Prayer green', () => {
+    expect(css).toContain('data-subpage="ramadan"] { --accent: #c2410c');
+    expect(css).toContain('data-subpage="ramadan"] { --accent: #fdba74');
+  });
+  it('gives Settings a stronger slate accent', () => {
+    expect(css).toContain('data-subpage="settings"] { --accent: #334155');
+    expect(css).toContain('data-subpage="settings"] { --accent: #cbd5e1');
+  });
+  it('tints each page surface with its own accent so the colour reads across the whole page', () => {
+    expect(css).toContain('html[data-route] {');
+    expect(css).toContain('--surface: color-mix(in srgb, var(--accent)');
   });
 });
 
