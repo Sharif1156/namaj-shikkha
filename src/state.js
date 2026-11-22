@@ -14,7 +14,7 @@ import { METHODS, MADHABS, HIGH_LATITUDE_RULES } from './core/prayer-times.js';
  */
 export const DEFAULTS = Object.freeze({
   locale: null, // null = follow the browser
-  theme: 'auto',
+  theme: 'light',
   hour12: false,
   haptics: true,
   method: 'Karachi',

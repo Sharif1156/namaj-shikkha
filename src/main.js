@@ -32,15 +32,11 @@ let mountedDay = dateKey();
 /* ----------------------------------------------------------------- theme */
 
 function applyTheme() {
-  const theme = state.get().theme ?? 'auto';
+  const theme = state.get().theme ?? 'light';
   document.documentElement.dataset.theme = theme;
   const meta = qs(document, 'meta[name="theme-color"]');
-  if (meta) {
-    const dark =
-      theme === 'dark' ||
-      (theme === 'auto' && window.matchMedia?.('(prefers-color-scheme: dark)').matches);
-    meta.setAttribute('content', dark ? '#0b1512' : '#0f3d33');
-  }
+  // The app is light-only (white content), so the browser chrome stays white.
+  if (meta) meta.setAttribute('content', '#ffffff');
 }
 
 /* --------------------------------------------------------------- context */
@@ -133,11 +129,6 @@ function boot() {
   applyTheme();
   applyStaticI18n();
   updateHeader();
-
-  // React to operating-system theme changes while on "auto".
-  window.matchMedia?.('(prefers-color-scheme: dark)').addEventListener?.('change', () => {
-    if ((state.get().theme ?? 'auto') === 'auto') applyTheme();
-  });
 
   const initial = location.hash.slice(1) || 'home';
   mount(VIEWS[initial] ? initial : 'home', { force: true });
