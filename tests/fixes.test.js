@@ -148,19 +148,25 @@ describe('per-page colours', () => {
 
   it('gives 99 Names its own rose accent, not Salah gold', () => {
     expect(css).toContain('data-subpage="names"] { --accent: #be185d');
-    expect(css).toContain('data-subpage="names"] { --accent: #f9a8d4');
   });
   it('gives Ramadan its own sunset-orange accent, not Prayer green', () => {
     expect(css).toContain('data-subpage="ramadan"] { --accent: #c2410c');
-    expect(css).toContain('data-subpage="ramadan"] { --accent: #fdba74');
   });
   it('gives Settings a stronger slate accent', () => {
     expect(css).toContain('data-subpage="settings"] { --accent: #334155');
-    expect(css).toContain('data-subpage="settings"] { --accent: #cbd5e1');
   });
-  it('tints each page surface with its own accent so the colour reads across the whole page', () => {
-    expect(css).toContain('html[data-route] {');
-    expect(css).toContain('--surface: color-mix(in srgb, var(--accent)');
+  it('paints the topbar and hero with the page accent, not dark green', () => {
+    expect(css).toContain('background: var(--accent);');
+    expect(css).toContain('linear-gradient(152deg, var(--accent)');
+    expect(css).not.toContain('var(--emerald-700) 0%, var(--emerald-900)');
+  });
+  it('keeps the content area white with no dark theme', () => {
+    expect(css).toContain('--bg: #ffffff;');
+    expect(css).not.toContain('data-theme="dark"');
+    expect(css).not.toContain('prefers-color-scheme');
+  });
+  it('defaults to the light theme', () => {
+    expect(state.DEFAULTS.theme).toBe('light');
   });
 });
 
